@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>AI URL Shortener Dashboard</title>
+
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+            rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+
+    <!-- Header -->
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">
+                AI URL Shortener Dashboard
+            </h2>
+        </div>
+
+        <div class="card-body">
+
+            <form
+                    class="row g-3"
+                    th:action="@{/shorten}"
+                    method="post">
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Original URL
+                    </label>
+
+                    <input
+                            name="originalUrl"
+                            type="text"
+                            class="form-control"
+                            placeholder="https://example.com"
+                            required>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <label class="form-label">
+                        Custom Alias
+                    </label>
+
+                    <input
+                            name="customAlias"
+                            type="text"
+                            class="form-control"
+                            placeholder="my-link">
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <label class="form-label">
+                        Expiry Days
+                    </label>
+
+                    <input
+                            name="expiryDays"
+                            type="number"
+                            class="form-control"
+                            placeholder="7">
+
+                </div>
+
+                <div class="col-12">
+
+                    <button
+                            type="submit"
+                            class="btn btn-success">
+
+                        Shorten URL
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- Stats Cards -->
+
+    <div class="row mt-4">
+
+        <!-- Total URLs -->
+
+        <div class="col-md-4">
+
+            <div class="card text-center shadow-sm">
+
+                <div class="card-body">
+
+                    <h5>Total URLs</h5>
+
+                    <h2 th:text="${urls.size()}">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Total Clicks -->
+
+        <div class="col-md-4">
+
+            <div class="card text-center shadow-sm">
+
+                <div class="card-body">
+
+                    <h5>Total Clicks</h5>
+
+                    <h2 th:text="${totalClicks}">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Active URLs -->
+
+        <div class="col-md-4">
+
+            <div class="card text-center shadow-sm">
+
+                <div class="card-body">
+
+                    <h5>Active URLs</h5>
+
+                    <h2 th:text="${urls.size()}">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- URL Table -->
+
+    <div class="card mt-4 shadow">
+
+        <div class="card-header">
+
+            <h4>My URLs</h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-dark">
+
+                <tr>
+
+                    <th>Short URL</th>
+                    <th>Clicks</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:each="url : ${urls}">
+
+                    <td th:text="${url.shortCode}">
+                        abc123
+                    </td>
+
+                    <td th:text="${url.clickCount}">
+                        0
+                    </td>
+
+                    <td th:text="${url.createdAt}">
+                        date
+                    </td>
+
+                    <td>
+
+                        <a
+                                th:href="@{'/' + ${url.shortCode}}"
+                                target="_blank"
+                                class="btn btn-success btn-sm">
+
+                            Open
+
+                        </a>
+
+                        <button
+                                type="button"
+                                class="btn btn-primary btn-sm"
+                                th:data-url="${'http://localhost:8080/' + url.shortCode}"
+                                onclick="copyUrl(this)">
+
+                            Copy
+
+                        </button>
+
+                        <a
+                                th:href="@{'/stats/' + ${url.shortCode}}"
+                                class="btn btn-info btn-sm">
+
+                            Stats
+
+                        </a>
+
+                        <form th:action="@{'/delete/' + ${url.shortCode}}"
+                              method="post"
+                              style="display:inline;">
+
+                            <button
+                                    class="btn btn-danger btn-sm"
+                                    type="submit">
+
+                                Delete
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    function copyUrl(button) {
+
+        navigator.clipboard.writeText(
+            button.dataset.url
+        );
+
+        alert("URL copied!");
+    }
+
+</script>
+
+</body>
+</html>
