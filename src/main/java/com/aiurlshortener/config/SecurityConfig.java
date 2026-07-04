@@ -1,33 +1,27 @@
 package com.aiurlshortener.config;
 
 import com.aiurlshortener.security.JwtAuthenticationFilter;
-import com.aiurlshortener.service.UrlService;
-import jakarta.servlet.http.HttpServletResponse;
+import com.aiurlshortener.security.RateLimitFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import lombok.RequiredArgsConstructor;
-
-import java.io.IOException;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
+    private final RateLimitFilter rateLimitFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http)
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)
             throws Exception {
 
         http
@@ -54,8 +48,13 @@ public class SecurityConfig {
                                 SessionCreationPolicy.STATELESS))
 
                 .addFilterBefore(
-                        jwtFilter,
+                        rateLimitFilter,
                         UsernamePasswordAuthenticationFilter.class
+                )
+
+                .addFilterAfter(
+                        jwtFilter,
+                        RateLimitFilter.class
                 );
 
         return http.build();
@@ -65,6 +64,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
-

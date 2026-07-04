@@ -8,6 +8,7 @@ import com.aiurlshortener.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.aiurlshortener.dto.LoginResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class AuthService {
     private final UserRepository repository;
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     public void register(RegisterRequest request) {
 
@@ -36,7 +38,7 @@ public class AuthService {
         repository.save(user);
     }
 
-    public String login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
 
         User user = repository.findByEmail(
                         request.getEmail())
@@ -53,8 +55,17 @@ public class AuthService {
                     "Invalid credentials");
         }
 
-        return jwtService.generateToken(
-                user.getEmail());
+        String accessToken =
+                jwtService.generateToken(user.getEmail());
+
+        String refreshToken =
+                refreshTokenService
+                        .createRefreshToken(user)
+                        .getToken();
+
+        return new LoginResponse(
+                accessToken,
+                refreshToken);
     }
 
 

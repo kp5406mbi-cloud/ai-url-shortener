@@ -5,6 +5,11 @@ import lombok.*;
 
 import java.io.Serializable;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
+
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -23,4 +28,11 @@ public class User implements Serializable {
     private String email;
 
     private String password;
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<RefreshToken> refreshTokens;
 }

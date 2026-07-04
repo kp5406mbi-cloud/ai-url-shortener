@@ -1,6 +1,7 @@
 package com.aiurlshortener.controller;
 
 import com.aiurlshortener.dto.LoginRequest;
+import com.aiurlshortener.dto.LoginResponse;
 import com.aiurlshortener.dto.RegisterRequest;
 import com.aiurlshortener.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(
+    public ResponseEntity<LoginResponse> login(
             @RequestBody LoginRequest request) {
 
         return ResponseEntity.ok(

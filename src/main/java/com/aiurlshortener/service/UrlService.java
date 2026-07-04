@@ -19,7 +19,6 @@ import java.util.UUID;
 public class UrlService {
 
     private final UrlRepository repository;
-
     private final UrlCacheService cacheService;
 
     public UrlResponse shorten(UrlRequest request) {
@@ -78,13 +77,16 @@ public class UrlService {
 
     public String getOriginalUrl(String code) {
 
+        System.out.println("Searching for = [" + code + "]");
+
         Url url = repository.findByShortCode(code)
                 .orElseThrow(() ->
                         new RuntimeException("URL not found"));
 
+        System.out.println("Found = [" + url.getShortCode() + "]");
+
         if (url.getExpiresAt() != null
-                && LocalDateTime.now()
-                .isAfter(url.getExpiresAt())) {
+                && LocalDateTime.now().isAfter(url.getExpiresAt())) {
 
             throw new BadRequestException(
                     "URL has expired");
