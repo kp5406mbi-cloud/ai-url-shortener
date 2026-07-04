@@ -79,9 +79,7 @@ public class UrlService {
 
         System.out.println("Searching for = [" + code + "]");
 
-        Url url = repository.findByShortCode(code)
-                .orElseThrow(() ->
-                        new RuntimeException("URL not found"));
+        Url url = cacheService.getUrlByCode(code);
 
         System.out.println("Found = [" + url.getShortCode() + "]");
 
