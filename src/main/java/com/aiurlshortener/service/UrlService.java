@@ -14,9 +14,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
+
+
+
 @Service
 @RequiredArgsConstructor
 public class UrlService {
+
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     private final UrlRepository repository;
     private final UrlCacheService cacheService;
@@ -71,7 +78,7 @@ public class UrlService {
 
         return UrlResponse.builder()
                 .originalUrl(url.getOriginalUrl())
-                .shortUrl("http://localhost:8080/" + code)
+                .shortUrl(baseUrl + "/" + code)
                 .build();
     }
 

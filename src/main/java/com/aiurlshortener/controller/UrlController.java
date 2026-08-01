@@ -9,11 +9,10 @@ import com.aiurlshortener.service.UrlService;
 import com.google.zxing.WriterException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.MediaType;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 
@@ -28,13 +27,6 @@ public class UrlController {
     @Value("${app.base-url}")
     private String baseUrl;
 
-
-}
-public class UrlController {
-
-    private final UrlService service;
-    private final QRCodeService qrCodeService;
-
     @PostMapping("/shorten")
     public ResponseEntity<UrlResponse> shorten(
             @Valid @RequestBody UrlRequest request) {
@@ -42,7 +34,7 @@ public class UrlController {
         return ResponseEntity.ok(service.shorten(request));
     }
 
-    @GetMapping(value = "/{code}/qr", produces = "image/png")
+    @GetMapping(value = "/{code}/qr", produces = MediaType.IMAGE_PNG_VALUE)
     public ResponseEntity<byte[]> generateQRCode(
             @PathVariable String code)
             throws WriterException, IOException {
