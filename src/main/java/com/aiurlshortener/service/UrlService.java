@@ -136,4 +136,35 @@ public class UrlService {
     public void delete(String code) {
         repository.deleteByShortCode(code);
     }
+
+    public long getTotalUrls() {
+        return repository.count();
+    }
+
+    public long getActiveUrls() {
+
+        return repository.findAll()
+                .stream()
+                .filter(url ->
+                        url.getExpiresAt() == null ||
+                                url.getExpiresAt().isAfter(LocalDateTime.now()))
+                .count();
+    }
+
+    public List<Url> getActiveUrlList() {
+
+        return repository.findAll()
+                .stream()
+                .filter(url ->
+                        url.getExpiresAt() == null ||
+                                url.getExpiresAt().isAfter(LocalDateTime.now()))
+                .toList();
+    }
+
+    public Url getUrlByShortCode(String code) {
+
+        return repository.findByShortCode(code)
+                .orElseThrow(() ->
+                        new BadRequestException("URL not found"));
+    }
 }

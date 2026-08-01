@@ -9,16 +9,27 @@ import com.aiurlshortener.service.UrlService;
 import com.google.zxing.WriterException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/urls")
 @RequiredArgsConstructor
+public class UrlController {
+
+    private final UrlService service;
+    private final QRCodeService qrCodeService;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
+
+
+}
 public class UrlController {
 
     private final UrlService service;
@@ -31,18 +42,14 @@ public class UrlController {
         return ResponseEntity.ok(service.shorten(request));
     }
 
-    @GetMapping(value = "/{code}/qr", produces = MediaType.IMAGE_PNG_VALUE)
+    @GetMapping(value = "/{code}/qr", produces = "image/png")
     public ResponseEntity<byte[]> generateQRCode(
             @PathVariable String code)
             throws WriterException, IOException {
 
         Url url = service.getUrlByShortCode(code);
 
-        String shortUrl = ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .path("/")
-                .path(url.getShortCode())
-                .toUriString();
+        String shortUrl = baseUrl + "/" + url.getShortCode();
 
         byte[] qr = qrCodeService.generateQRCode(shortUrl);
 
