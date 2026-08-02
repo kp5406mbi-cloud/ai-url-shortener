@@ -56,4 +56,9 @@ public class UrlController {
 
         return ResponseEntity.ok(service.getStats(code));
     }
+
+    @GetMapping("/config")
+    public String config() {
+        return baseUrl;
+    }
 }
